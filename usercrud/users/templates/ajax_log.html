@@ -1,0 +1,24 @@
+<table>
+    <thead>
+        <tr>
+            <th>URL</th>
+            <th>Data</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Response</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.request_url }}</td>
+            <td>{{ log.request_data }}</td>
+            <td>{{ log.request_method }}</td>
+            <td>{{ log.response_status }}</td>
+            <td>{{ log.response_data }}</td>
+            <td>{{ log.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

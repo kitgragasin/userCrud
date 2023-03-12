@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    
+    <script>
+        
+    </script>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="row">
+                <h1>Users</h1>
+        </div>
+        <div class="row">
+                <table id="user-table" >
+                </table>
+                <div id="pagination-container"></div>
+
+        </div>
+       
+        <div class="row">
+            <div class="col-md-3">
+                <button id="show-get-btn">Get</button>
+            </div>
+            <div class="col-md-3">
+                <button id="show-post-btn">Post</button>
+            </div>
+            <div class="col-md-3">
+                <button id="show-put-btn">Put</button>
+            </div>
+            <div class="col-md-3">
+                <button id="show-delete-btn">Delete</button>
+            </div>
+            
+            
+            
+            
+        </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                <div id="request">
+                    <div id="add-user"  style="display:none;">
+                        <form id="add-user-form">
+                        {% csrf_token %}
+                        <label for="username">Username:</label>
+                        <input type="text" name="username" id="username">
+                        <br>
+                        <label for="email">Email:</label>
+                        <input type="email" name="email" id="email">
+                        <br>
+                        <label for="password">Password:</label>
+                        <input type="password" name="password" id="password">
+                        <br>
+                        <label for="first_name">First Name:</label>
+                        <input type="text" name="first_name" id="first_name">
+                        <br>
+                        <label for="last_name">Last Name:</label>
+                        <input type="text" name="last_name" id="last_name">
+                        <br>
+                        <button type="submit">Submit</button>
+                        </form>
+                    </div>
+                
+                    <div id="get-user"  style="display:none;">
+                        <input type="text" id="user-id-field">
+                        <button id="get-user-details-btn">Submit</button>
+                
+                    </div>
+                    <div id="put-user"  style="display:none;">
+                        <form id="user-details-form">
+                            <div class="form-group">
+                                <label for="username">ID</label>
+                                <input type="text" class="form-control" id="put-user_id" name="user-id">
+                            </div>
+                            <div class="form-group">
+                              <label for="username">Username:</label>
+                              <input type="text" class="form-control" id="put-username" name="username">
+                            </div>
+                            <div class="form-group">
+                              <label for="first_name">First name:</label>
+                              <input type="text" class="form-control" id="put-first_name" name="first_name">
+                            </div>
+                            <div class="form-group">
+                              <label for="last_name">Last name:</label>
+                              <input type="text" class="form-control" id="put-last_name" name="last_name">
+                            </div>
+                            <div class="form-group">
+                              <label for="email">Email:</label>
+                              <input type="email" class="form-control" id="put-email" name="email">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                          </form>
+                    </div>
+                
+                    <div id="delete-user"  style="display:none;">
+                        <form id="user-details-form">
+                            <!-- form fields for user details -->
+                            <div class="form-group">
+                                <label for="username">ID</label>
+                                <input type="text" class="form-control" id="delete-user_id" name="user-id">
+                            </div>
+                
+                            <button id="delete-user-btn" type="button">Submit</button>
+                        </form>
+                    </div>
+                
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div id="response">
+    
+                </div>
+            </div>
+            <div class="col-md-2">
+
+            </div>
+        </div>
+
+
+
+    
+
+    
+
+        
+
+
+    </div>
+   
+    
+  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    
+      
+      $(document).ready(function() {
+
+        function updateTable(pageNumber) {
+            console.log("this was called", pageNumber)
+            $.ajax({
+                url: '/userapi/users/',
+                type: 'GET',
+                data: {page: pageNumber},
+                success: function(data) {
+                    var table = $('<table>').addClass('table');
+                    var header = $('<tr>');
+                    header.append($('<th>').text('ID'));
+                    header.append($('<th>').text('Username'));
+                    header.append($('<th>').text('First Name'));
+                    header.append($('<th>').text('Last Name'));
+                    header.append($('<th>').text('Email'));
+                    table.append(header);
+                    $.each(data.results, function(index, user) {
+                        var row = $('<tr>');
+                        row.append($('<td>').text(user.id));
+                        row.append($('<td>').text(user.user__username));
+                        row.append($('<td>').text(user.first_name));
+                        row.append($('<td>').text(user.last_name));
+                        row.append($('<td>').text(user.email));
+                        table.append(row);
+                    });
+
+                    $('#user-table').html(table);
+                    console.log("data",data)
+
+                    // Create pagination links
+                    var currentPage = data.page_number;
+                    var totalPages = data.num_pages;
+                    console.log("current page", currentPage);
+                    console.log("total page", totalPages)
+                    var paginationContainer = $('#pagination-container');
+                    paginationContainer.empty();
+                    var paginationList = $('<ul>').addClass('pagination');
+                    for (var i = 1; i <= totalPages; i++) {
+                        var paginationItem = $('<li>').addClass('page-item');
+                        var paginationLink = $('<a>').addClass('page-link').text(i);
+                        if (i === currentPage) {
+                        paginationItem.addClass('active');
+                        } else {
+                    // Use closure to capture current value of i
+                            (function(page) {
+                                paginationLink.on('click', function() {
+                                    updateTable(page);
+                                });
+                            })(i);
+                        }
+                        paginationItem.append(paginationLink);
+                        paginationList.append(paginationItem);
+                    }
+                    paginationContainer.append(paginationList);
+
+                    var log_data = {
+                        "request_method":"GET",
+                        "request_url":"/userapi/users/",
+                        "request_data":pageNumber,
+                        "response_status":200
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/userui/ajax_view/',
+                        data: log_data,
+                        success: function(response) {
+                            // Handle the response
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle the error
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                console.error('Error getting user list:', error);
+                }
+            });
+        }
+
+
+        updateTable(1);
+
+        $('#show-post-btn').on('click', function() {
+            $('#add-user').show();
+            $('#get-user').hide();
+            $('#put-user').hide();
+            $('#delete-user').hide();
+            
+        });
+        $('#show-get-btn').on('click', function() {
+            $('#add-user').hide();
+            $('#get-user').show();
+            $('#put-user').hide();
+            $('#delete-user').hide();
+            
+        });
+        $('#show-put-btn').on('click', function() {
+            $('#add-user').hide();
+            $('#get-user').hide();
+            $('#put-user').show();
+            $('#delete-user').hide();
+            
+        });
+        $('#show-delete-btn').on('click', function() {
+            $('#add-user').hide();
+            $('#get-user').hide();
+            $('#put-user').hide();
+            $('#delete-user').show();
+            
+        });
+
+        $('#get-user-details-btn').click(function() {
+            console.log("naclcik")
+            var userId = $('#user-id-field').val();
+            $.ajax({
+            url: '/userapi/users/' + userId + '/',
+            type: 'GET',
+            success: function(data) {
+                console.log(data)
+                $('#response').html(JSON.stringify(data));
+                var log_data = {
+                        "request_method":"GET",
+                        "request_url":'/userapi/users/' + userId + '/',
+                        "request_data":"none",
+                        "response_status":200
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/userui/ajax_view/',
+                        data: log_data,
+                        success: function(response) {
+                            // Handle the response
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle the error
+                        }
+                    });
+            },
+            error: function(xhr, status, error,data) {
+                console.error(error);
+                $('#response').html(JSON.stringify(xhr.responseJSON));
+            }
+            });
+        });
+        $('#delete-user-btn').on('click', function() {
+            // confirm deletion
+            if (confirm('Are you sure you want to delete this user?')) {
+                // get the user ID
+                var user_id = $('#delete-user_id').val();
+
+                // send the DELETE request using ajax
+                $.ajax({
+                    url: '/userapi/users/' + user_id + '/',
+                    type: 'DELETE',
+                    success: function(response) {
+                        // handle success
+                        console.log('User deleted successfully');
+                        // update the user table
+                        updateTable(1);
+                        $('#response').html(JSON.stringify(response));
+                        var log_data = {
+                            "request_method":"DELETE",
+                            "request_url":'/userapi/users/' + userId + '/',
+                            "request_data":"none",
+                            "response_status":200
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: '/userui/ajax_view/',
+                            data: log_data,
+                            success: function(response) {
+                                // Handle the response
+                            },
+                            error: function(xhr, status, error) {
+                                // Handle the error
+                            }
+                        });
+                        
+                    },
+                    error: function(xhr, status, error) {
+                        // handle error
+                        console.log('Error deleting user:', error);
+                        $('#response').html(JSON.stringify(xhr.responseJSON));
+                    }
+                });
+            }
+        });
+
+        $('#user-details-form').on('submit', function(e) {
+            e.preventDefault(); // prevent default form submit action
+
+            // get the form data
+            var formData = {
+                'user_id': $('#put-user_id').val(),
+                'username': $('#put-username').val(),
+                'email': $('#put-email').val(),
+                'password': $('#put-password').val(),
+                'first_name': $('#put-first_name').val(),
+                'last_name': $('#put-last_name').val()
+            };
+            console.log(formData)
+            var user_id = formData.user_id;
+            // send the PUT request using AJAX
+            $.ajax({
+                url: '/userapi/users/' + user_id + '/',
+                type: 'PUT',
+                data: JSON.stringify(formData),
+                success: function(response) {
+                    // handle success
+                    console.log('User details updated successfully');
+                    updateTable();
+                    $('#response').html(JSON.stringify(response));
+                    var log_data = {
+                        "request_method":"PUT",
+                        "request_url":'/userapi/users/' + userId + '/',
+                        "request_data":"none",
+                        "response_status":200
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/userui/ajax_view/',
+                        data: log_data,
+                        success: function(response) {
+                            // Handle the response
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle the error
+                        }
+                    });
+                },
+                error: function(xhr, status, error) {
+                    // handle error
+                    console.log('Error updating user details:', error);
+                    $('#response').html(JSON.stringify(xhr.responseJSON));
+                }
+            });
+        });
+  
+        // Handle form submission
+        $('#add-user-form').submit(function(event) {
+          // Prevent default form submission
+          event.preventDefault();
+          // Get form data
+          var formData = {
+            'username': $('#username').val(),
+            'email': $('#email').val(),
+            'password': $('#password').val(),
+            'first_name': $('#first_name').val(),
+            'last_name': $('#last_name').val()
+          };
+          // Submit form data via AJAX
+          $.ajax({
+            url: '/userapi/users/',
+            type: 'POST',
+            data: JSON.stringify(formData),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function(data) {
+              console.log('User created successfully:', data);
+              $('#response').html(JSON.stringify(data));
+              // Clear form inputs
+              $('#add-user-form')[0].reset();
+              var log_data = {
+                        "request_method":"POST",
+                        "request_url":'/userapi/users/',
+                        "request_data":JSON.stringify(formData),
+                        "response_status":200
+                    }
+                    $.ajax({
+                        type: 'POST',
+                        url: '/userui/ajax_view/',
+                        data: log_data,
+                        success: function(response) {
+                            // Handle the response
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle the error
+                        }
+                    });
+              updateTable(1);
+            },
+            error: function(xhr, status, error) {
+              console.error('Error creating user:', error);
+            }
+          });
+        });
+      });
+    </script>
+</body>
+</html>
